@@ -1,0 +1,34 @@
+GET http://localhost:3000/api/users
+
+###
+POST http://localhost:3000/api/users/addUser
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "gender": "Male",
+  "dob": "1990-01-01",
+  "phone": "0767548383",
+  "address": "123 Main St",
+  "role": "Manager"
+}
+
+###
+PUT http://localhost:3000/api/users/editUser
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "johndoe@example.com",
+  "gender": "Female",
+  "dob": "1990-02-01",
+  "phone": "0123158544",
+  "address": "456 Main St",
+  "role": "Senior Manager"
+}
+
+###
+DELETE http://localhost:3000/api/users/delete/johndoe

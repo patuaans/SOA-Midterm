@@ -1,0 +1,37 @@
+GET http://localhost:3000/api/restaurant
+
+###
+PUT http://localhost:3000/api/restaurant/updatetable/20
+
+###
+GET http://localhost:3000/api/table/init
+
+###
+GET http://localhost:3000/api/table/6600f10fc60ab3558449d822
+
+<> 2024-03-25T113205.200.json
+
+
+###
+PUT http://localhost:3000/api/table/updateStatus/6600f10fc60ab3558449d822
+Content-Type: application/json
+
+{
+  "status": "ACTIVE"
+}
+
+
+###
+PUT http://localhost:3000/api/table/open/6600f10fc60ab3558449d822
+
+###
+PUT http://localhost:3000/api/table/swap
+Content-Type: application/json
+
+{
+  "tableId1": "6600f10fc60ab3558449d822",
+  "tableId2": "6600f10fc60ab3558449d821"
+}
+
+<> 2024-03-25T120237.200.json
+<> 2024-03-25T115525.200.json
