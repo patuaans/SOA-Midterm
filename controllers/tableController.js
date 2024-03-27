@@ -16,7 +16,16 @@ module.exports.initTables = async (req, res) => {
             .then(() => res.status(200).json({ success: true, data: newTable}))
             .catch(err => res.status(500).send('Server error'));
     })
+}
 
+module.exports.getTables = async (req, res) => {
+    try {
+        const tables = await Table.find()
+        res.status(200).json(tables)
+    } catch (error) {
+        console.error('Error fetching table information:', error)
+        res.status(500).send('Server error')
+    }
 }
 
 module.exports.getTableInfo = async (req, res) => {

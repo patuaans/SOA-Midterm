@@ -1,5 +1,5 @@
 const CategorySchema = require('../models/Category');
-const ItemSchema = require('../models/Item');
+const ItemSchema = require('../models/item');
 
 // create a new category
 const create = async (req, res) => {

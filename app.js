@@ -17,6 +17,7 @@ const userRoute = require('./routes/userRoute')
 const categoryRoute = require('./routes/categoryRoute')
 const tableRoute = require('./routes/tableRoute')
 const orderRoute = require('./routes/orderRoute')
+const orderItemRoute = require('./routes/orderItem')
 const itemRoute = require('./routes/itemRoute')
 
 app.use('/api/restaurant', restaurantRoute)
@@ -24,6 +25,7 @@ app.use('/api/users', userRoute)
 app.use('/api/categories', categoryRoute)
 app.use('/api/table', tableRoute)
 app.use('/api/order', orderRoute)
+app.use('/api/orderItem', orderItemRoute)
 app.use('/api/items', itemRoute)
 
 const PORT = process.env.PORT || 8080

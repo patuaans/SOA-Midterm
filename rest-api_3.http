@@ -33,5 +33,19 @@ Content-Type: application/json
   "tableId2": "6600f10fc60ab3558449d821"
 }
 
-<> 2024-03-25T120237.200.json
-<> 2024-03-25T115525.200.json
+###
+PUT http://localhost:3000/api/order/addItem/6603be81a226c772a821da46
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "itemId": "65feddc9e146f5d58d090dbd",
+      "quantity": 2
+    },
+    {
+      "itemId": "65fee0185a147406b7e69eb4",
+      "quantity": 1
+    }
+  ]
+}

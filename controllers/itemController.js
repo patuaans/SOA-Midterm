@@ -2,12 +2,7 @@ const fs = require("fs");
 const baseUrl = require("../middleware/helper/basePathHelper");
 const path = require("path");
 
-const Item = require("../models/Item");
-const domain =
-    process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : "https://food-delivery-api-v1.herokuapp.com";
-
+const Item = require("../models/item");
 
 // Get all items
 const getAllItems = async (req, res) => {
@@ -31,6 +26,20 @@ const getItemById = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+// Get items by Category
+const getItemByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.category;
+        const items = await Item.find({ categoryId: categoryId });
+        if (!items.length) {
+            return res.status(404).json({ message: "No items found for this category" });
+        }
+        res.json(items);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
 
 // Create a new item
 const createItem = async (req, res) => {
@@ -129,4 +138,5 @@ module.exports = {
     updateItem,
     uploadItemImage,
     deleteItem,
+    getItemByCategory
 };
