@@ -9,9 +9,6 @@ GET http://localhost:3000/api/table/init
 ###
 GET http://localhost:3000/api/table/6600f10fc60ab3558449d822
 
-<> 2024-03-25T113205.200.json
-
-
 ###
 PUT http://localhost:3000/api/table/updateStatus/6600f10fc60ab3558449d822
 Content-Type: application/json
@@ -34,7 +31,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:3000/api/order/addItem/6603be81a226c772a821da46
+PUT http://localhost:3000/api/orderItem/addItem/66066de5ae72fb0242d6d5e6
 Content-Type: application/json
 
 {
@@ -48,4 +45,12 @@ Content-Type: application/json
       "quantity": 1
     }
   ]
+}
+
+###
+PUT http://localhost:3000/api/orderItem/changeStatus/66066e0dae72fb0242d6d5ec
+Content-Type: application/json
+
+{
+  "status": "Served"
 }

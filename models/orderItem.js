@@ -16,7 +16,7 @@ const orderItemSchema = new Schema({
         type: String,
         required: true
     },
-    quality: {
+    quantity: {
         type: Number,
         required: true,
         default: 1

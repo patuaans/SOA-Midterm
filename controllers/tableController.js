@@ -4,18 +4,22 @@ const Order = require('../models/order')
 module.exports.initTables = async (req, res) => {
     const tableData = [
         { seat_count: 4, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: true },
-        { seat_count: 2, location: 'Main Dining Area', status: 'ACTIVE' , isOccupied: true},
-        { seat_count: 4, location: 'Main Dining Area', status: 'ACTIVE' , isOccupied: false},
-        { seat_count: 8, location: 'Main Dining Area', status: 'ACTIVE' , isOccupied: false},
+        { seat_count: 2, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: true},
+        { seat_count: 4, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: false},
+        { seat_count: 8, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: false},
         { seat_count: 4, location: 'Main Dining Area', status: 'INACTIVE', isOccupied: false}
     ]
 
-    tableData.forEach(data => {
-        const newTable = new Table(data);
-        newTable.save()
-            .then(() => res.status(200).json({ success: true, data: newTable}))
-            .catch(err => res.status(500).send('Server error'));
-    })
+    try {
+        const saveTablePromises = tableData.map(data => new Table(data).save())
+
+        const savedTables = await Promise.all(saveTablePromises)
+
+        res.status(200).json({ success: true, data: savedTables })
+    } catch (error) {
+        console.error('InitTablesError:', error)
+        res.status(500).send('Server error')
+    }
 }
 
 module.exports.getTables = async (req, res) => {
@@ -88,7 +92,7 @@ module.exports.openTable = async (req, res) => {
             });
             await newOrder.save()
 
-            res.json({ message: 'Table has been opened and a new order has been created.', table, order: newOrder })
+            res.json({ message: 'Table has been opened and a new order has been created', table, order: newOrder })
         } else if (table.isOccupied) {
             res.status(400).send('Table is already occupied.')
         } else if (table.status !== 'ACTIVE') {

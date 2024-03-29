@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }))
 configureMiddleware(app)
 
 app.get('/', (req, res) => {
-    res.send('SOA-Midterm')
+    res.redirect('http://localhost:3000/api-docs')
 })
 
 const restaurantRoute = require('./routes/restaurantRoute')
