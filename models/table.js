@@ -13,7 +13,8 @@ const tableSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['ACTIVE',  'INACTIVE']
+        enum: ['ACTIVE',  'INACTIVE'],
+        default: 'INACTIVE'
     },
     isOccupied: {
         type: Boolean,

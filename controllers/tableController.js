@@ -22,6 +22,18 @@ module.exports.initTables = async (req, res) => {
     }
 }
 
+module.exports.addTable = async (req, res) => {
+    try {
+        const { seat_count, location } = req.body
+        const newTable = new Table({ seat_count, location })
+        const savedTable = await newTable.save()
+        res.status(201).json({ success: true, data: savedTable })
+    } catch (error) {
+        console.error('AddTableError:', error)
+        res.status(500).send('Server error while adding a new table')
+    }
+}
+
 module.exports.getTables = async (req, res) => {
     try {
         const tables = await Table.find()

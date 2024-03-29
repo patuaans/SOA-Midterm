@@ -1,15 +1,30 @@
 require('dotenv').config()
 const connectDB = require('./config/db')
 const express = require('express')
+const socketIo = require('socket.io')
 const configureMiddleware = require('./config/middleware')
-const path = require('path')
 
 const app = express()
+
 app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
+app.set('view engine', 'ejs')
 configureMiddleware(app)
 
 app.get('/', (req, res) => {
-    res.redirect('http://localhost:3000/api-docs')
+    res.send('SOA-Midterm')
+})
+
+app.get('/customer', (req, res) => {
+    res.render('customer')
+})
+
+app.get('/chef', (req, res) => {
+    res.render('chef')
+})
+
+app.get('/waiter', (req, res) => {
+    res.render('waiter')
 })
 
 const restaurantRoute = require('./routes/restaurantRoute')
@@ -29,7 +44,30 @@ app.use('/api/orderItem', orderItemRoute)
 app.use('/api/items', itemRoute)
 
 const PORT = process.env.PORT || 8080
-app.listen(PORT, async () => {
+const httpServer = app.listen(PORT, async() => {
     await connectDB()
     console.log(`Server is running at http://localhost:${PORT}`)
+})
+
+const io = socketIo(httpServer)
+
+io.on('connection', (socket) => {
+    console.log('New WebSocket connection')
+
+    socket.on('joinRoom', ({ room }) => {
+        socket.join(room)
+        console.log(`Socket ${socket.id} joined room ${room}`)
+    })
+
+    socket.on('orderPlaced', (order) => {
+        socket.to('chefs').emit('newOrder', order)
+    })
+
+    socket.on('dishPrepared', (order) => {
+        io.to('waiters').emit('serveOrder', order)
+    })
+
+    socket.on('requestHelp', (tableInfo) => {
+        io.to('waiters').emit('helpRequested', tableInfo)
+    })
 })
