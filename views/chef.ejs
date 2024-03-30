@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheft</title>
+</head>
+<body>
+    <h2>Chef Dashboard</h2>
+    <ul id="ordersList">
+
+    </ul>
+
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000')
+
+        socket.emit('joinRoom', { room: 'chefs'})
+
+        socket.on('newOrder', (order) => {
+            console.log('New order received:', order)
+            displayOrder(order)
+        })
+
+        function displayOrder(order) {
+            const ordersList = document.getElementById('ordersList')
+            const orderItem = document.createElement('li');
+            orderItem.textContent = `Table ${order.tableNumber}: `
+
+            const itemsText = order.items.map(item => `${item.quantity}x ${item.itemName}`).join(', ')
+            orderItem.textContent += itemsText
+
+            const dishReadyBtn = document.createElement('button')
+            dishReadyBtn.textContent = 'Dish Ready'
+            dishReadyBtn.onclick = function() {
+                dishReady(order)
+            }
+            orderItem.appendChild(dishReadyBtn)
+            ordersList.appendChild(orderItem)
+        }
+
+        function dishReady(order) {
+            socket.emit('dishPrepared', order)
+            console.log('Dish ready to be served:', order)
+        }
+    </script>
+</body>
+</html>

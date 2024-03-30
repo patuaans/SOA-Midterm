@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer</title>
+</head>
+<body>
+    <h2>Place an Order</h2>
+    <button onclick="placeOrder()">Order Food</button>
+    <button onclick="callWaiter()">Call Waiter</button>
+
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000')
+
+        function placeOrder() {
+            const order = {
+                tableNumber: '1',
+                items: [
+                    { itemName: 'Pizza', quantity: 2 },
+                    { itemName: 'Pasta', quantity: 1 }
+                ]
+            }
+            socket.emit('orderPlaced', order)
+            console.log('Order placed:', order)
+        }
+
+        function callWaiter() {
+            const tableInfo = {
+                tableId: 'Table 1',
+                message: 'Customer needs assistance'
+            };
+            socket.emit('requestHelp', tableInfo);
+            console.log('Waiter called for:', tableInfo)
+        }
+    </script>
+</body>
+</html>

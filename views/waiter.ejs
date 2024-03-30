@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiter</title>
+</head>
+<body>
+    <h2>Waiter Dashboard</h2>
+
+    <script type="text/javascript" src="socket.io/socket.io.js"></script>
+    <script>
+        const socket = io('http://localhost:3000')
+        socket.emit('joinRoom', { room: 'waiters' })
+
+        socket.on('serveOrder', (order) => {
+            const orderDetails = `Table ${order.tableNumber}: ` +
+                order.items.map(item => `${item.quantity}x ${item.itemName}`).join(', ')
+            alert(`Dish ready to serve: ${orderDetails}`)
+        })
+
+        socket.on('helpRequested', (tableInfo) => {
+            alert(`Help requested at ${tableInfo.tableId}: ${tableInfo.message}`)
+        })
+    </script>
+</body>
+</html>
