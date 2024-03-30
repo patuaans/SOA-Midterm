@@ -1,109 +1,84 @@
-const {validationResult} = require("express-validator")
+const { validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
 
 const saltRounds = 10
 
-module.exports.users = async (req, res) => {
+module.exports.getUsers = async (req, res) => {
     try {
         const users = await User.find()
-        res.status(200).json({ success: true, data: users})
+        res.status(200).json({ message: "Users fetched successfully", data: users })
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ success: false, error: 'Internal server error' })
+        res.status(500).json({ message: "Failed to fetch users", error: error.message })
     }
 }
 
 module.exports.addUser = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        const firstError = errors.array()[0].msg
-        return res.status(404).json({ success: false, error: firstError })
+        return res.status(400).json({ message: errors.array()[0].msg })
     }
 
     let { name, email, gender, dob, phone, address, role } = req.body
 
     try {
-        const existingUsers = await User.find({ 'profile.email': email })
-        if (existingUsers.length) {
-            return res.status(404).json({ success: false, error: 'User with the provided email already exists' })
+        const userExists = await User.findOne({ 'profile.email': email })
+        if (userExists) {
+            return res.status(409).json({ message: 'User with the provided email already exists' })
         }
 
         const username = email.split('@')[0]
-        const hashedPassword = await bcrypt.hash(username, saltRounds)
+        const hashedPassword = await bcrypt.hash(username, saltRounds);
         const newUser = new User({
             username,
             password: hashedPassword,
             role,
             active: false,
             lock: false,
-            profile: { name: name, email, gender, dateOfBirth: dob, phone, address },
+            profile: { name, email, gender, dateOfBirth: dob, phone, address },
         })
 
         await newUser.save()
-        return res.status(200).json({ success: true, data: newUser})
+        res.status(201).json({ message: "User added successfully", data: newUser })
     } catch (error) {
-        console.error(error)
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to add user", error: error.message })
     }
 }
 
 module.exports.editUser = async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-        const firstError =errors.array()[0].msg
-        return res.status(404).json({ success: false, error: firstError })
+        return res.status(400).json({ message: errors.array()[0].msg })
     }
 
-    let {name, email, gender, dob, phone, address, role} = req.body
+    const {name, ...updateData} = req.body
 
     try {
-        const result = await User.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
             { 'profile.email': email },
-            {
-                $set: {
-                    role: role,
-                    'profile.name': name,
-                    'profile.email': email,
-                    'profile.gender': gender,
-                    'profile.dob': dob,
-                    'profile.phone': phone,
-                    'profile.address': address,
-                },
-            },
+            { $set: { 'profile': updateData } },
             { new: true }
-        );
+        )
 
-        if (result) {
-            return res.json({ success: true });
-        } else {
-            return res.status(404).json({
-                success: false,
-                error: 'An error occurred while updating the employee',
-            })
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found' })
         }
+        res.json({ message: "User updated successfully", data: updatedUser })
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to update user", error: error.message })
     }
 }
 
 module.exports.deleteUser = async (req, res) => {
-    const { username } = req.params;
+    const { username } = req.params
 
     try {
         const result = await User.deleteOne({ username })
-
-        if (result.deletedCount > 0) {
-            return res.status(200).json({ success: true, message: 'User has been deleted'})
-        } else {
-            return res.status(404).json({
-                success: false,
-                error: 'User not found or an error occurred while deleting the employee',
-            })
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: 'User not found' })
         }
+        res.status(200).json({ message: 'User deleted successfully' })
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to delete user", error: error.message })
     }
 }

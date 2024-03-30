@@ -1,8 +1,7 @@
-const fs = require("fs");
-const baseUrl = require("../middleware/helper/basePathHelper");
-const path = require("path");
-
-const Item = require("../models/item");
+const fs = require("fs")
+const baseUrl = require("../middleware/helper/basePathHelper")
+const path = require("path")
+const Item = require("../models/item")
 
 // Get all items
 const getAllItems = async (req, res) => {

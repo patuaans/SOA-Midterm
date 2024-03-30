@@ -1,15 +1,19 @@
-const express = require('express');
-const ItemController = require('../controllers/itemController');
-const router = express.Router();
-const upload = require('../middleware/upload');
+const express = require('express')
+const ItemController = require('../controllers/itemController')
+const upload = require('../middleware/upload')
+const router = express.Router()
 
-// Get all items
-router.get('/', ItemController.getAllItems);
-router.get('/:id', ItemController.getItemById);
+router.route('/')
+    .get(ItemController.getAllItems)
+    .post(ItemController.createItem)
+
+router.route('/:id')
+    .get(ItemController.getItemById)
+    .put(ItemController.updateItem)
+    .delete(ItemController.deleteItem)
+
 router.get('/category/:category', ItemController.getItemByCategory)
-router.post('/', ItemController.createItem);
 
-router.post('/image/:id', upload.single('image'), ItemController.uploadItemImage);
-router.put('/:id', ItemController.updateItem);
-router.delete('/:id', ItemController.deleteItem);
-module.exports = router;
+router.post('/image/:id', upload.single('image'), ItemController.uploadItemImage)
+
+module.exports = router

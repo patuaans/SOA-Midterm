@@ -25,6 +25,10 @@ const orderItemSchema = new Schema({
         type: Number,
         required: true
     },
+    note: {
+        type: String,
+        required: false
+    },
     status: {
         type: String,
         required: true,

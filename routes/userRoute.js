@@ -1,11 +1,14 @@
 const express = require("express")
-const router = express.Router()
 const { userValidator } = require('../middleware/userValidate')
 const userController = require("../controllers/userController")
+const router = express.Router()
 
-router.get('/', userController.users)
-router.post('/addUser', userValidator, userController.addUser)
-router.put('/editUser', userValidator, userController.editUser)
-router.delete('/delete/:username', userController.deleteUser)
+router.route('/')
+    .get(userController.getUsers)
+    .post(userValidator, userController.addUser)
+
+router.route('/:userId')
+    .put(userValidator, userController.editUser)
+    .delete(userController.deleteUser)
 
 module.exports = router

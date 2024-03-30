@@ -1,0 +1,110 @@
+GET http://localhost:3000/api/users
+
+###
+POST http://localhost:3000/api/users/addUser
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "John Doe",
+  "email": "johndoe@example.com",
+  "gender": "Male",
+  "dob": "1990-01-01",
+  "phone": "0767548383",
+  "address": "123 Main St",
+  "role": "Manager"
+}
+
+###
+PUT http://localhost:3000/api/users/editUser
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Jane Doe",
+  "email": "johndoe@example.com",
+  "gender": "Female",
+  "dob": "1990-02-01",
+  "phone": "0123158544",
+  "address": "456 Main St",
+  "role": "Senior Manager"
+}
+
+###
+DELETE http://localhost:3000/api/users/delete/johndoe
+
+###
+GET http://localhost:3000/api/restaurant
+
+###
+GET http://localhost:3000/api/table/init
+
+###
+GET http://localhost:3000/api/table
+
+###
+GET http://localhost:3000/api/table/66066db2ae72fb0242d6d5d9
+
+###
+POST http://localhost:3000/api/table/add
+Content-Type: application/json
+
+{
+  "tableId": 6,
+  "location": "Patio"
+}
+
+###
+PUT http://localhost:3000/api/table/66086e123480f6921750fff4/status
+Content-Type: application/json
+
+{
+  "status": "ACTIVE"
+}
+
+
+###
+PUT http://localhost:3000/api/table/1/open
+
+###
+PUT http://localhost:3000/api/table/swap
+Content-Type: application/json
+
+{
+  "tableId1": 1,
+  "tableId2": 3
+}
+
+###
+GET http://localhost:3000/api/order
+
+###
+GET http://localhost:3000/api/order/total/6606896dc1a85f1269c1ba6c
+
+###
+GET http://localhost:3000/api/orderItem
+
+###
+PUT http://localhost:3000/api/orderItem/addItem/66066de5ae72fb0242d6d5e6
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "itemId": "65feddc9e146f5d58d090dbd",
+      "quantity": 2
+    },
+    {
+      "itemId": "65fee0185a147406b7e69eb4",
+      "quantity": 1
+    }
+  ]
+}
+
+###
+PUT http://localhost:3000/api/orderItem/changeStatus/66066e0dae72fb0242d6d5ec
+Content-Type: application/json
+
+{
+  "status": "Served"
+}

@@ -2,8 +2,9 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const tableSchema = new Schema({
-    seat_count: {
+    tableId: {
         type: Number,
+        unique: true,
         required: true
     },
     location: {
@@ -13,13 +14,8 @@ const tableSchema = new Schema({
     status: {
         type: String,
         required: true,
-        enum: ['ACTIVE',  'INACTIVE'],
+        enum: ['ACTIVE', 'INACTIVE', 'OCCUPIED'],
         default: 'INACTIVE'
-    },
-    isOccupied: {
-        type: Boolean,
-        required: true,
-        default: false
     }
 }, {timestamps: true})
 

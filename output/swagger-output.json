@@ -60,6 +60,20 @@
           "200": {
             "description": "OK"
           },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -77,17 +91,18 @@
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/api/users/addUser": {
+      },
       "post": {
         "description": "",
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
-          "404": {
-            "description": "Not Found"
+          "400": {
+            "description": "Bad Request"
+          },
+          "409": {
+            "description": "Conflict"
           },
           "500": {
             "description": "Internal Server Error"
@@ -127,13 +142,26 @@
         }
       }
     },
-    "/api/users/editUser": {
+    "/api/users/{userId}": {
       "put": {
         "description": "",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "400": {
+            "description": "Bad Request"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -150,22 +178,7 @@
                   "name": {
                     "example": "any"
                   },
-                  "email": {
-                    "example": "any"
-                  },
-                  "gender": {
-                    "example": "any"
-                  },
-                  "dob": {
-                    "example": "any"
-                  },
-                  "phone": {
-                    "example": "any"
-                  },
-                  "address": {
-                    "example": "any"
-                  },
-                  "role": {
+                  "updateData": {
                     "example": "any"
                   }
                 }
@@ -173,14 +186,12 @@
             }
           }
         }
-      }
-    },
-    "/api/users/delete/{username}": {
+      },
       "delete": {
         "description": "",
         "parameters": [
           {
-            "name": "username",
+            "name": "userId",
             "in": "path",
             "required": true,
             "schema": {
@@ -357,36 +368,6 @@
         }
       }
     },
-    "/api/table/add": {
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "seat_count": {
-                    "example": "any"
-                  },
-                  "location": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/table/": {
       "get": {
         "description": "",
@@ -400,12 +381,25 @@
         }
       }
     },
-    "/api/table/{tabledId}": {
+    "/api/table/add": {
+      "post": {
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/table/{tableId}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "tabledId",
+            "name": "tableId",
             "in": "path",
             "required": true,
             "schema": {
@@ -426,7 +420,7 @@
         }
       }
     },
-    "/api/table/updateStatus/{tableId}": {
+    "/api/table/{tableId}/status": {
       "put": {
         "description": "",
         "parameters": [
@@ -442,9 +436,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -469,7 +460,7 @@
         }
       }
     },
-    "/api/table/open/{tableId}": {
+    "/api/table/{tableId}/open": {
       "put": {
         "description": "",
         "parameters": [
@@ -531,7 +522,7 @@
         }
       }
     },
-    "/api/order/orders": {
+    "/api/order/": {
       "get": {
         "description": "",
         "responses": {
@@ -544,7 +535,7 @@
         }
       }
     },
-    "/api/order/orderTotal/{orderId}": {
+    "/api/order/total/{orderId}": {
       "get": {
         "description": "",
         "parameters": [

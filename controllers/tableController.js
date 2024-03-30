@@ -3,165 +3,148 @@ const Order = require('../models/order')
 
 module.exports.initTables = async (req, res) => {
     const tableData = [
-        { seat_count: 4, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: true },
-        { seat_count: 2, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: true},
-        { seat_count: 4, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: false},
-        { seat_count: 8, location: 'Main Dining Area', status: 'ACTIVE', isOccupied: false},
-        { seat_count: 4, location: 'Main Dining Area', status: 'INACTIVE', isOccupied: false}
+        { tableId: 1, location: 'Main Dining Area', status: 'ACTIVE'},
+        { tableId: 2, location: 'Main Dining Area', status: 'ACTIVE'},
+        { tableId: 3, location: 'Main Dining Area', status: 'ACTIVE'},
+        { tableId: 4, location: 'Main Dining Area', status: 'ACTIVE'},
+        { tableId: 5, location: 'Main Dining Area', status: 'INACTIVE'}
     ]
 
     try {
-        const saveTablePromises = tableData.map(data => new Table(data).save())
-
-        const savedTables = await Promise.all(saveTablePromises)
-
-        res.status(200).json({ success: true, data: savedTables })
+        const savedTables = await Promise.all(tableData.map(table => new Table(table).save()));
+        res.status(200).json({ message: "Tables initialized successfully", data: savedTables })
     } catch (error) {
-        console.error('InitTablesError:', error)
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to initialize tables", error: error.message })
     }
 }
 
 module.exports.addTable = async (req, res) => {
     try {
-        const { seat_count, location } = req.body
-        const newTable = new Table({ seat_count, location })
-        const savedTable = await newTable.save()
-        res.status(201).json({ success: true, data: savedTable })
+        const newTable = new Table(req.body)
+        const savedTable = await newTable.save();
+        res.status(201).json({ message: "Table added successfully", data: savedTable })
     } catch (error) {
-        console.error('AddTableError:', error)
-        res.status(500).send('Server error while adding a new table')
+        res.status(500).json({ message: "Failed to add table", error: error.message })
     }
 }
 
 module.exports.getTables = async (req, res) => {
     try {
         const tables = await Table.find()
-        res.status(200).json(tables)
+        res.status(200).json({ message: "Tables fetched successfully", data: tables })
     } catch (error) {
-        console.error('Error fetching table information:', error)
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to fetch tables", error: error.message })
     }
 }
 
 module.exports.getTableInfo = async (req, res) => {
-    let tableId = req.params.tabledId
-
+    const { tableId } = req.params
     try {
         const table = await Table.findById(tableId)
         if (!table) {
-            return res.status(404).send('Table not found')
+            return res.status(404).json({ message: "Table not found" })
         }
-        res.json(table)
+        res.status(200).json({ message: "Table information fetched successfully", data: table })
     } catch (error) {
-        console.error('Error fetching table information:', error)
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to fetch table information", error: error.message })
     }
 }
 
 module.exports.updateTableStatus = async (req, res) => {
-    const tableId = req.params.tableId
+    const { tableId } = req.params
     const { status } = req.body
-
-    if (!['ACTIVE', 'INACTIVE'].includes(status)) {
-        return res.status(400).send('Invalid status provided. Must be either "ACTIVE" or "INACTIVE"')
-    }
 
     try {
         const table = await Table.findById(tableId)
         if (!table) {
-            return res.status(404).send('Table not found')
+            return res.status(404).json({ message: "Table not found" })
         }
 
-        if (table.status != status) {
-            table.status = status
-            await table.save()
-            res.json({ message: 'Table status updated successfully', table })
-        } else {
-            res.status(200).send('Table status is already ' + status)
-        }
+        table.status = status
+        await table.save()
+        res.status(200).json({ message: "Table status updated successfully", data: table })
     } catch (error) {
-        console.error('Error fetching table information:', error)
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to update table status", error: error.message })
     }
 }
 
 module.exports.openTable = async (req, res) => {
-    const tableId = req.params.tableId;
+    const { tableId } = req.params
 
     try {
-        const table = await Table.findById(tableId)
+        const table = await Table.findOne({ tableId: parseInt(tableId, 10) })
         if (!table) {
-            return res.status(404).send('Table not found')
+            return res.status(404).json({ message: "Table not found" })
         }
 
-        if (!table.isOccupied && table.status === 'ACTIVE') {
-            table.isOccupied = true;
-            await table.save();
+        if (table.status === 'ACTIVE') {
+            table.status = 'OCCUPIED'
+            await table.save()
 
             const newOrder = new Order({
                 tableId: table._id,
-            });
+            })
             await newOrder.save()
 
-            res.json({ message: 'Table has been opened and a new order has been created', table, order: newOrder })
-        } else if (table.isOccupied) {
-            res.status(400).send('Table is already occupied.')
-        } else if (table.status !== 'ACTIVE') {
-            res.status(400).send('Table cannot be opened as it is not in an ACTIVE status.')
+            return res.status(200).json({
+                message: "Table opened and new order created",
+                data: { table, order: newOrder }
+            })
+        } else {
+            let errorMessage = 'Table cannot be opened'
+            if (table.status === 'OCCUPIED') {
+                errorMessage = 'Table is already occupied'
+            } else if (table.status === 'INACTIVE') {
+                errorMessage = 'Table is not in an ACTIVE status'
+            }
+            return res.status(400).json({ message: errorMessage })
         }
     } catch (error) {
-        console.error('Error updating table status or creating order:', error)
-        res.status(500).send('Server error')
+        console.error('Error opening table:', error);
+        return res.status(500).json({
+            message: "Failed to open table or create order",
+            error: error.message
+        })
     }
 }
 
 module.exports.swapTables = async (req, res) => {
-    const { tableId1, tableId2 } = req.body;
-
+    const { tableId1, tableId2 } = req.body
     try {
         const [table1, table2] = await Promise.all([
-            Table.findById(tableId1),
-            Table.findById(tableId2)
+            Table.findOne({ tableId: tableId1 }),
+            Table.findOne({ tableId: tableId2 })
         ]);
 
         if (!table1 || !table2) {
-            return res.status(404).send('One or both tables not found')
+            return res.status(404).json({ message: "One or both tables not found" })
         }
 
-        let tempIsOccupied = table1.isOccupied;
-        table1.isOccupied = table2.isOccupied;
-        table2.isOccupied = tempIsOccupied;
+        let tempStatus = table1.status
+        table1.status = table2.status
+        table2.status = tempStatus
 
         await Promise.all([table1.save(), table2.save()])
 
-        let ordersToUpdate = []
+        if (table1.status === 'OCCUPIED' || table2.status === 'OCCUPIED') {
+            let [order1, order2] = await Promise.all([
+                Order.findOne({ table: table1._id }),
+                Order.findOne({ table: table2._id })
+            ])
 
-        if (table1.isOccupied) {
-            let order1 = await Order.findOne({ tableId: table1._id })
             if (order1) {
-                order1.tableId = tableId2
+                order1.table = table2._id
                 await order1.save()
-                ordersToUpdate.push(order1)
             }
-        }
 
-        if (table2.isOccupied) {
-            let order2 = await Order.findOne({ tableId: table2._id })
             if (order2) {
-                order2.tableId = tableId1
+                order2.table = table1._id
                 await order2.save()
-                ordersToUpdate.push(order2)
             }
         }
 
-        res.json({
-            message: 'Tables have been successfully swapped',
-            tables: [table1, table2],
-            orders: ordersToUpdate
-        })
+        res.status(200).json({ message: "Tables swapped successfully", data: { table1, table2 } })
     } catch (error) {
-        console.error('Error swapping tables and orders:', error)
-        res.status(500).send('Server error')
+        res.status(500).json({ message: "Failed to swap tables", error: error.message })
     }
 }

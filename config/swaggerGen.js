@@ -26,7 +26,7 @@ const swaggerGen = () => {
     };
 
     const outputFile = './output/swagger-output.json';
-    const endpointsFiles = [path.join(__dirname, '../app.js')];
+    const endpointsFiles = [path.join(__dirname, '../routes.js')];
 
     swaggerAutogen(outputFile, endpointsFiles, doc).then(async () => {
         await require(path.join(__dirname, '../app.js'));

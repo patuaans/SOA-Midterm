@@ -1,8 +1,9 @@
 const express = require('express')
-const router = express.Router()
 const orderController = require('../controllers/orderController')
+const router = express.Router()
 
-router.get('/orders', orderController.getOrders)
-router.get('/orderTotal/:orderId', orderController.calculateOrderTotal);
+router.get('/', orderController.getOrders)
+
+router.get('/total/:orderId', orderController.calculateOrderTotal)
 
 module.exports = router
